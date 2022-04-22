@@ -4,7 +4,7 @@ using namespace std;
 
 int main()
 {
-    Program p1("../test-cases/0.txt");
+    Program p1("../test-cases/1.txt");
     p1.run();
     return 0;
     // int x, y;

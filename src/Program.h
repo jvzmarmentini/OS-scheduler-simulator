@@ -41,7 +41,7 @@ private:
     int acc;
     int pc;
     std::vector<std::string> code;
-    std::vector<data> data;
+    std::vector<data> datasegment;
     std::map<std::string, int> labels;
 
     void ltrim(std::string &s);

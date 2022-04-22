@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <map>
 
 #include "Program.h"
 
@@ -16,30 +17,22 @@ void Program::ltrim(string &s)
 // TODO: replace this if struct function object for find_if
 int Program::getDataValueByKey(string key)
 {
-    for (auto d : data)
-    {
-        if (d.key == key)
-        {
-            return d.value;
-        }
-    }
+    for (data data : datasegment)
+        if (data.key == key)
+            return data.value;
     return -1;
 }
 int Program::setDataValueByKey(string key)
 {
-    for (auto d : data)
-    {
-        if (d.key == key)
-        {
-            d.value = acc;
-        }
-    }
+    for (data data : datasegment)
+        if (data.key == key)
+            data.value = acc;
     return -1;
 }
 int Program::getDataValueByPos(int pos)
 {
-    if (pos < data.size())
-        return data[pos].value;
+    if (pos < datasegment.size())
+        return datasegment[pos].value;
     return -1;
 }
 
@@ -54,14 +47,15 @@ Program::Program(string path)
             continue;
         else if (string(line) == ".endcode")
         {
-            for (string s : tmp)
+            for (int i = 0; i < tmp.size(); i++)
             {
-                if (s.find(':'))
+                string s = tmp[i];
+                if (s.find(':') != string::npos)
                 {
-                    string tmpkey = s.substr(0, s.find(':'));
-                    labels[tmpkey] = pc
+                    labels[s.substr(0, s.find(':'))] = i;
+                    s.erase(0, s.find(':') + 2);
                 }
-                code.push_back(s)
+                code.push_back(s);
             }
             tmp.clear();
         }
@@ -72,7 +66,7 @@ Program::Program(string path)
                 struct data tmpdata;
                 tmpdata.key = s.substr(0, s.rfind(' '));
                 tmpdata.value = stoi(s.substr(s.rfind(' ') + 1));
-                data.push_back(tmpdata);
+                datasegment.push_back(tmpdata);
             }
             tmp.clear();
         }
@@ -80,6 +74,19 @@ Program::Program(string path)
         {
             tmp.push_back(string(line));
         }
+    }
+
+    if (constants::DEBBUG)
+    {
+        std::cout << "code segment" << std::endl;
+        for (string line : code)
+            std::cout << line << std::endl;
+        std::cout << "data segment" << std::endl;
+        for (data data : datasegment)
+            std::cout << data.key << "=>" << data.value << std::endl;
+        std::cout << "label segment" << std::endl;
+        for (map<string, int>::iterator itr = labels.begin(); itr != labels.end(); ++itr)
+            std::cout << itr->first << "=>" << itr->second << std::endl;
     }
 }
 
@@ -120,12 +127,10 @@ void Program::run()
         string target = line.substr(line.find(' ') + 1);
         int value;
 
-        if (op(command) == BRANY || op(command) == BRPOS || op(command) == BRZERO || op(command) == BRNEG)
-            continue;
-        else
+        if (op(command) != BRANY || op(command) != BRPOS || op(command) != BRZERO || op(command) != BRNEG)
         {
             if (target[0] == '#')
-                value = getDataValueByPos(stoi(target));
+                value = getDataValueByPos(stoi(target.erase(0, 1)));
             else if (isdigit(target[0]))
                 value = stoi(target);
             else
@@ -165,16 +170,28 @@ void Program::run()
             setDataValueByKey(target);
             break;
         case BRANY:
-
-            break;
+            pc = labels[target];
+            continue;
         case BRPOS:
-
+            if (acc > 0)
+            {
+                pc = labels[target];
+                continue;
+            }
             break;
         case BRZERO:
-
+            if (acc == 0)
+            {
+                pc = labels[target];
+                continue;
+            }
             break;
         case BRNEG:
-
+            if (acc < 0)
+            {
+                pc = labels[target];
+                continue;
+            }
             break;
         case SYSCALL:
             if (value == 0)
