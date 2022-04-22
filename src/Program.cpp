@@ -116,106 +116,117 @@ Operator Program::op(string com)
         return SYSCALL;
 }
 
-void Program::run()
+/**
+ * Run the program for 1 time unit
+ *
+ * @return 1 if 'SYSCALL 0' was executed. Otherwise returns 0
+ *
+ * @throw exception-object exception description
+ */
+int Program::run()
 {
-    // TODO: implementar modo endereçamento diretor (#1 => Variable)
-    // TODO: finalizar ops
-    while (true)
+    string line = code[pc];
+    string command = line.substr(0, line.find(' '));
+    string target = line.substr(line.find(' ') + 1);
+    int value;
+
+    if (op(command) != BRANY || op(command) != BRPOS || op(command) != BRZERO || op(command) != BRNEG)
     {
-        string line = code[pc];
-        string command = line.substr(0, line.find(' '));
-        string target = line.substr(line.find(' ') + 1);
-        int value;
-
-        if (op(command) != BRANY || op(command) != BRPOS || op(command) != BRZERO || op(command) != BRNEG)
-        {
-            if (target[0] == '#')
-                value = getDataValueByPos(stoi(target.erase(0, 1)));
-            else if (isdigit(target[0]))
-                value = stoi(target);
-            else
-                value = getDataValueByKey(target);
-        }
-
-        switch (op(command))
-        {
-        case ADD:
-            if (constants::DEBBUG)
-                cout << "pc: " << pc << "; ADD " << target << endl;
-            acc += value;
-            break;
-        case SUB:
-            if (constants::DEBBUG)
-                cout << "pc: " << pc << "; SUB " << target << endl;
-            acc -= value;
-            break;
-        case MULT:
-            if (constants::DEBBUG)
-                cout << "pc: " << pc << "; MULT " << target << endl;
-            acc *= value;
-            break;
-        case DIV:
-            if (constants::DEBBUG)
-                cout << "pc: " << pc << "; DIV " << target << endl;
-            acc /= value;
-            break;
-        case LOAD:
-            if (constants::DEBBUG)
-                cout << "pc: " << pc << "; LOAD " << target << endl;
-            acc = value;
-            break;
-        case STORE:
-            if (constants::DEBBUG)
-                cout << "pc: " << pc << "; STORE " << target << endl;
-            setDataValueByKey(target);
-            break;
-        case BRANY:
-            pc = labels[target];
-            continue;
-        case BRPOS:
-            if (acc > 0)
-            {
-                pc = labels[target];
-                continue;
-            }
-            break;
-        case BRZERO:
-            if (acc == 0)
-            {
-                pc = labels[target];
-                continue;
-            }
-            break;
-        case BRNEG:
-            if (acc < 0)
-            {
-                pc = labels[target];
-                continue;
-            }
-            break;
-        case SYSCALL:
-            if (value == 0)
-            {
-                if (constants::DEBBUG)
-                    cout << "pc: " << pc << "; SYSCALL 0 " << target << endl;
-                return;
-            }
-            else if (value == 1)
-            {
-                if (constants::DEBBUG)
-                    cout << "pc: " << pc << "; SYSCALL 1 " << target << endl;
-                std::cout << "ACC: " << acc << std::endl;
-            }
-            else
-            {
-                int tmp;
-                if (constants::DEBBUG)
-                    cout << "pc: " << pc << "; SYSCALL 2 " << target << endl;
-                cin >> tmp;
-                return;
-            }
-            break;
-        };
-        pc += 1;
+        if (target[0] == '#')
+            value = getDataValueByPos(stoi(target.erase(0, 1)));
+        else if (isdigit(target[0]))
+            value = stoi(target);
+        else
+            value = getDataValueByKey(target);
     }
+
+    switch (op(command))
+    {
+    case ADD:
+        if (constants::DEBBUG)
+            cout << "pc: " << pc << "; ADD " << target << endl;
+        acc += value;
+        break;
+    case SUB:
+        if (constants::DEBBUG)
+            cout << "pc: " << pc << "; SUB " << target << endl;
+        acc -= value;
+        break;
+    case MULT:
+        if (constants::DEBBUG)
+            cout << "pc: " << pc << "; MULT " << target << endl;
+        acc *= value;
+        break;
+    case DIV:
+        if (constants::DEBBUG)
+            cout << "pc: " << pc << "; DIV " << target << endl;
+        acc /= value;
+        break;
+    case LOAD:
+        if (constants::DEBBUG)
+            cout << "pc: " << pc << "; LOAD " << target << endl;
+        acc = value;
+        break;
+    case STORE:
+        if (constants::DEBBUG)
+            cout << "pc: " << pc << "; STORE " << target << endl;
+        setDataValueByKey(target);
+        break;
+    case BRANY:
+        if (constants::DEBBUG)
+            cout << "pc: " << pc << "; BRANY " << target << endl;
+        pc = labels[target];
+        return 0;
+    case BRPOS:
+        if (constants::DEBBUG)
+            cout << "pc: " << pc << "; BRPOS " << target << endl;
+        if (acc > 0)
+        {
+            pc = labels[target];
+            return 0;
+        }
+        break;
+    case BRZERO:
+        if (constants::DEBBUG)
+            cout << "pc: " << pc << "; BRZERO " << target << endl;
+        if (acc == 0)
+        {
+            pc = labels[target];
+            return 0;
+        }
+        break;
+    case BRNEG:
+        if (constants::DEBBUG)
+            cout << "pc: " << pc << "; BRNEG " << target << endl;
+        if (acc < 0)
+        {
+            pc = labels[target];
+            return 0;
+        }
+        break;
+    case SYSCALL:
+
+        if (value == 0)
+        {
+            if (constants::DEBBUG)
+                cout << "pc: " << pc << "; SYSCALL " << target << endl;
+            return 1;
+        }
+        else if (value == 1)
+        {
+            if (constants::DEBBUG)
+                cout << "pc: " << pc << "; SYSCALL " << target << endl;
+            std::cout << "ACC: " << acc << std::endl;
+        }
+        else
+        {
+            int tmp;
+            if (constants::DEBBUG)
+                cout << "pc: " << pc << "; SYSCALL " << target << endl;
+            cin >> tmp;
+        }
+        break;
+    };
+    pc += 1;
+    return 0;
 }

@@ -6,7 +6,7 @@
 
 namespace constants
 {
-    const bool DEBBUG = false;
+    const bool DEBBUG = true;
 }
 
 enum Operator
@@ -34,7 +34,7 @@ class Program
 {
 public:
     Program(std::string iofile);
-    void run();
+    int run();
     Operator op(std::string com);
 
 private:

@@ -5,6 +5,14 @@ using namespace std;
 int main()
 {
     Program p1("../test-cases/1.txt");
+    while (true)
+    {
+        int rt = p1.run();
+
+        if (rt == 1)
+            break;
+    }
+
     p1.run();
     return 0;
     // int x, y;
