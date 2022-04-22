@@ -1,7 +1,13 @@
 #include <iostream>
 #include <vector>
+#include <map>
 #ifndef PROGRAM_H
 #define PROGRAM_H
+
+namespace constants
+{
+    const bool DEBBUG = false;
+}
 
 enum Operator
 {
@@ -36,9 +42,12 @@ private:
     int pc;
     std::vector<std::string> code;
     std::vector<data> data;
-    int label[50];
+    std::map<std::string, int> labels;
 
     void ltrim(std::string &s);
+    int getDataValueByKey(std::string key);
+    int setDataValueByKey(std::string key);
+    int getDataValueByPos(int pos);
 };
 
 #endif

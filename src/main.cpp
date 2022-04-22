@@ -2,8 +2,10 @@
 #include "Program.h"
 using namespace std;
 
-int main() {
+int main()
+{
     Program p1("../test-cases/0.txt");
+    p1.run();
     return 0;
     // int x, y;
     // int sum;
