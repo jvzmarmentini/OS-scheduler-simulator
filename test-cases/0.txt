@@ -1,11 +1,10 @@
 .code
     LOAD variable
-    SUB variable
+    SUB 1
     SYSCALL 1
-    BRPOS 1
     SYSCALL 0
 .endcode
 .data
-    Variable 10
-    Variable2 10
+    variable 10
+    variable2 5
 .enddata

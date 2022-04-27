@@ -1,5 +1,5 @@
 .code
-    LOAD variable
+    LOAD Variable
     ponto1: SUB #1
     SYSCALL 1
     BRPOS ponto1
@@ -7,4 +7,5 @@
 .endcode
 .data
     Variable 10
+    Variable2 2
 .enddata
