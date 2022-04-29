@@ -6,7 +6,7 @@
 
 namespace constants
 {
-    const bool DEBBUG = true;
+    const bool DEBBUG = false;
 }
 
 enum Operator
@@ -38,6 +38,7 @@ public:
     Operator op(std::string com);
 
 private:
+    int pid;
     int acc;
     int pc;
     std::vector<std::string> code;

@@ -112,8 +112,7 @@ Operator Program::op(string com)
         return BRZERO;
     if (com == "BRNEG")
         return BRNEG;
-    if (com == "SYSCALL")
-        return SYSCALL;
+    return SYSCALL;
 }
 
 /**

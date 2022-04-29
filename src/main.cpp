@@ -1,27 +1,28 @@
 #include <iostream>
+#include <queue>
 #include "Program.h"
 using namespace std;
 
 int main()
 {
+    Program p0("../test-cases/0.txt");
     Program p1("../test-cases/1.txt");
+    queue<Program> qnew;
+    qnew.push(p0);
+
     while (true)
     {
-        int rt = p1.run();
+        int rt = qnew.front().run();
 
         if (rt == 1)
-            break;
+        {
+            qnew.pop();
+            if (qnew.empty())
+            {
+                break;
+            }
+        }
     }
 
-    p1.run();
     return 0;
-    // int x, y;
-    // int sum;
-    // cout << "Type a number: ";
-    // cin >> x;
-    // cout << "Type another number: ";
-    // cin >> y;
-    // sum = x + y;
-    // cout << "Sum is: " << sum;
-    // return 0;
 }
