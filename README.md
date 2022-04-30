@@ -1,11 +1,11 @@
 # os_t1
-operational system t1
+scheduler simulator with FIFO, SFJ and Round Robin policies in C++11
 
 # run on mac
-g++ -std=c++11 <main> <files>
+g++ -std=c++11 *.cpp && ./a.out
 
-# PROGRAM
-## TODO
-Check for bugs in Program, test it and improve the code for optmization, QOL features and reading.
-
-# SISOP
+# next steps
+implement SFJ and RR policies
+bugfix and code improvement
+doc funcs
+implement IO for policy, program etc.
