@@ -16,9 +16,9 @@ int main()
     scheduler.spawn(p1);
     while (true)
     {
+        std::cout << "system clock: " << systemclock << std::endl;
         // admit new programs based on arrival time
         scheduler.admit(systemclock);
-        scheduler.printQueue(scheduler.getQready());
         // if nothing is running, dispatch new program
         if (scheduler.getQrunning().empty())
             scheduler.dispatch();

@@ -9,20 +9,22 @@ void Scheduler::spawn(Program p)
 {
     if (constants::S_DEBBUG)
         std::cout << "spawning pid " << p.getPid() << std::endl;
-    qnew.push_back(p);
+    qnew.push(p);
+    Program top = qnew.top();
 };
 void Scheduler::admit(int currenttime)
 {
-    for (Program &p: qnew) {
-        if (p.getArrivaltime() == currenttime)
+    if (!qnew.empty())
+    {
+        Program top = qnew.top();
+        if (top.getArrivaltime() == currenttime)
         {
             if (constants::S_DEBBUG)
-                std::cout << "admiting pid " << p.getPid() << std::endl;
-            qready.push_back(qnew.front());
-            qnew.pop_front();
+                std::cout << "admiting pid " << top.getPid() << std::endl;
+            qready.push_back(qnew.top());
+            qnew.pop();
         }
     }
-    
 };
 void Scheduler::dispatch()
 {

@@ -6,7 +6,7 @@
 
 namespace constants
 {
-    const bool P_DEBBUG = true;
+    const bool P_DEBBUG = false;
 }
 
 enum Operator
@@ -29,11 +29,12 @@ class Program
 public:
     Program(std::string iofile, int arrivaltime, int pid);
     Program(std::string iofile, int arrivaltime, int pid, int priority);
-    int run();
-    Operator op(std::string com);
+    friend bool operator > ( Program const& a, Program const& b);
     int getPid() {return pid;};
     int getPc() {return pc;};
+    int getPriority() {return priority;};
     int getArrivaltime() {return arrivaltime;};
+    int run();
 
 private:
     int pid;
@@ -47,6 +48,7 @@ private:
 
     void ltrim(std::string &s);
     void mount(std::string path);
+    Operator op(std::string com);
 };
 
 #endif

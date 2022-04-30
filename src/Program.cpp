@@ -14,6 +14,13 @@ void Program::ltrim(string &s)
                                     { return !std::isspace(ch); }));
 }
 
+bool operator > (Program const& lhs, Program const& rhs)
+{
+    if (lhs.priority == rhs.priority)
+        return lhs.arrivaltime > rhs.arrivaltime;
+    return lhs.priority > rhs.priority;
+}
+
 void Program::mount(string path)
 {
 vector<string> tmp;

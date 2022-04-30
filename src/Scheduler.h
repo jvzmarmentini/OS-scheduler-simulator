@@ -1,19 +1,28 @@
 #include <iostream>
 #include <deque>
+#include <queue>
+#include <vector>
 #include "Program.h"
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
 namespace constants
 {
-    const bool S_DEBBUG = true;
+    const bool S_DEBBUG = false;
 }
+
+struct comparator {
+     bool operator()(Program i, Program j) {
+     return i > j;
+    }
+};
+
 
 class Scheduler
 {
 public:
     Scheduler(std::string policy);
-    std::deque<Program>& getQnew() {return qnew;};
+    std::priority_queue<Program, std::vector<Program>, comparator>& getQnew() {return qnew;};
     std::deque<Program>& getQready() {return qready;};
     std::deque<Program>& getQrunning() {return qrunning;};
     std::deque<Program>& getQblocked() {return qblocked;};
@@ -30,7 +39,7 @@ public:
 
 private:
     std::string policy;
-    std::deque<Program> qnew;
+    std::priority_queue<Program, std::vector<Program>, comparator> qnew;
     std::deque<Program> qready;
     std::deque<Program> qrunning;
     std::deque<Program> qblocked;
