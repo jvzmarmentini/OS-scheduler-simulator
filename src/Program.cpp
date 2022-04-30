@@ -14,11 +14,9 @@ void Program::ltrim(string &s)
                                     { return !std::isspace(ch); }));
 }
 
-Program::Program(string path, int arrivaltime, int pid)
+void Program::mount(string path)
 {
-    this->arrivaltime = arrivaltime;
-    this->pid = pid;
-    vector<string> tmp;
+vector<string> tmp;
     ifstream input(path);
     for (string line; getline(input, line);)
     {
@@ -67,6 +65,21 @@ Program::Program(string path, int arrivaltime, int pid)
         for (map<string, int>::iterator itr = labels.begin(); itr != labels.end(); ++itr)
             std::cout << itr->first << "=>" << itr->second << std::endl;
     }
+}
+
+Program::Program(string path, int arrivaltime, int pid)
+{
+    this->arrivaltime = arrivaltime;
+    this->pid = pid;
+    this->priority = 0;
+    mount(path);
+}
+Program::Program(string path, int arrivaltime, int pid, int priority)
+{
+    this->arrivaltime = arrivaltime;
+    this->pid = pid;
+    this->priority = priority;
+    mount(path);
 }
 
 Operator Program::op(string com)

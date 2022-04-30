@@ -28,6 +28,7 @@ class Program
 {
 public:
     Program(std::string iofile, int arrivaltime, int pid);
+    Program(std::string iofile, int arrivaltime, int pid, int priority);
     int run();
     Operator op(std::string com);
     int getPid() {return pid;};
@@ -35,15 +36,17 @@ public:
     int getArrivaltime() {return arrivaltime;};
 
 private:
-    int pid = 0;
+    int pid;
     int acc = 0;
     int pc = 0;
-    int arrivaltime = 0;
+    int priority;
+    int arrivaltime;
     std::vector<std::string> code;
     std::map<std::string, int> datasegment;
     std::map<std::string, int> labels;
 
     void ltrim(std::string &s);
+    void mount(std::string path);
 };
 
 #endif
