@@ -14,30 +14,10 @@ void Program::ltrim(string &s)
                                     { return !std::isspace(ch); }));
 }
 
-// TODO: replace this if struct function object for find_if
-int Program::getDataValueByKey(string key)
+Program::Program(string path, int arrivaltime, int pid)
 {
-    for (data data : datasegment)
-        if (data.key == key)
-            return data.value;
-    return -1;
-}
-int Program::setDataValueByKey(string key)
-{
-    for (data data : datasegment)
-        if (data.key == key)
-            data.value = acc;
-    return -1;
-}
-int Program::getDataValueByPos(int pos)
-{
-    if (pos < datasegment.size())
-        return datasegment[pos].value;
-    return -1;
-}
-
-Program::Program(string path)
-{
+    this->arrivaltime = arrivaltime;
+    this->pid = pid;
     vector<string> tmp;
     ifstream input(path);
     for (string line; getline(input, line);)
@@ -63,10 +43,9 @@ Program::Program(string path)
         {
             for (string s : tmp)
             {
-                struct data tmpdata;
-                tmpdata.key = s.substr(0, s.rfind(' '));
-                tmpdata.value = stoi(s.substr(s.rfind(' ') + 1));
-                datasegment.push_back(tmpdata);
+                string key = s.substr(0, s.rfind(' '));
+                int value = stoi(s.substr(s.rfind(' ') + 1));
+                datasegment[key] = value;
             }
             tmp.clear();
         }
@@ -76,14 +55,14 @@ Program::Program(string path)
         }
     }
 
-    if (constants::DEBBUG)
+    if (constants::P_DEBBUG)
     {
         std::cout << "code segment" << std::endl;
         for (string line : code)
             std::cout << line << std::endl;
         std::cout << "data segment" << std::endl;
-        for (data data : datasegment)
-            std::cout << data.key << "=>" << data.value << std::endl;
+        for (map<string, int>::iterator itr = datasegment.begin(); itr != datasegment.end(); ++itr)
+            std::cout << itr->first << "=>" << itr->second << std::endl;
         std::cout << "label segment" << std::endl;
         for (map<string, int>::iterator itr = labels.begin(); itr != labels.end(); ++itr)
             std::cout << itr->first << "=>" << itr->second << std::endl;
@@ -132,52 +111,52 @@ int Program::run()
     if (op(command) != BRANY || op(command) != BRPOS || op(command) != BRZERO || op(command) != BRNEG)
     {
         if (target[0] == '#')
-            value = getDataValueByPos(stoi(target.erase(0, 1)));
+            value = stoi(target.erase(0, 1));
         else if (isdigit(target[0]))
             value = stoi(target);
         else
-            value = getDataValueByKey(target);
+            value = datasegment[target];
     }
 
     switch (op(command))
     {
     case ADD:
-        if (constants::DEBBUG)
+        if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; ADD " << target << endl;
         acc += value;
         break;
     case SUB:
-        if (constants::DEBBUG)
+        if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; SUB " << target << endl;
         acc -= value;
         break;
     case MULT:
-        if (constants::DEBBUG)
+        if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; MULT " << target << endl;
         acc *= value;
         break;
     case DIV:
-        if (constants::DEBBUG)
+        if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; DIV " << target << endl;
         acc /= value;
         break;
     case LOAD:
-        if (constants::DEBBUG)
+        if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; LOAD " << target << endl;
         acc = value;
         break;
     case STORE:
-        if (constants::DEBBUG)
+        if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; STORE " << target << endl;
-        setDataValueByKey(target);
+        datasegment[target] = acc;
         break;
     case BRANY:
-        if (constants::DEBBUG)
+        if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; BRANY " << target << endl;
         pc = labels[target];
         return 0;
     case BRPOS:
-        if (constants::DEBBUG)
+        if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; BRPOS " << target << endl;
         if (acc > 0)
         {
@@ -186,7 +165,7 @@ int Program::run()
         }
         break;
     case BRZERO:
-        if (constants::DEBBUG)
+        if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; BRZERO " << target << endl;
         if (acc == 0)
         {
@@ -195,7 +174,7 @@ int Program::run()
         }
         break;
     case BRNEG:
-        if (constants::DEBBUG)
+        if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; BRNEG " << target << endl;
         if (acc < 0)
         {
@@ -207,20 +186,20 @@ int Program::run()
 
         if (value == 0)
         {
-            if (constants::DEBBUG)
+            if (constants::P_DEBBUG)
                 cout << "pc: " << pc << "; SYSCALL " << target << endl;
             return 1;
         }
         else if (value == 1)
         {
-            if (constants::DEBBUG)
+            if (constants::P_DEBBUG)
                 cout << "pc: " << pc << "; SYSCALL " << target << endl;
             std::cout << "ACC: " << acc << std::endl;
         }
         else
         {
             int tmp;
-            if (constants::DEBBUG)
+            if (constants::P_DEBBUG)
                 cout << "pc: " << pc << "; SYSCALL " << target << endl;
             cin >> tmp;
         }

@@ -6,7 +6,7 @@
 
 namespace constants
 {
-    const bool DEBBUG = false;
+    const bool P_DEBBUG = true;
 }
 
 enum Operator
@@ -24,31 +24,26 @@ enum Operator
     SYSCALL
 };
 
-struct data
-{
-    std::string key;
-    int value;
-};
-
 class Program
 {
 public:
-    Program(std::string iofile);
+    Program(std::string iofile, int arrivaltime, int pid);
     int run();
     Operator op(std::string com);
+    int getPid() {return pid;};
+    int getPc() {return pc;};
+    int getArrivaltime() {return arrivaltime;};
 
 private:
-    int pid;
-    int acc;
-    int pc;
+    int pid = 0;
+    int acc = 0;
+    int pc = 0;
+    int arrivaltime = 0;
     std::vector<std::string> code;
-    std::vector<data> datasegment;
+    std::map<std::string, int> datasegment;
     std::map<std::string, int> labels;
 
     void ltrim(std::string &s);
-    int getDataValueByKey(std::string key);
-    int setDataValueByKey(std::string key);
-    int getDataValueByPos(int pos);
 };
 
 #endif
