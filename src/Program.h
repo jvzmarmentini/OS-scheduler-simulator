@@ -29,11 +29,11 @@ class Program
 public:
     Program(std::string iofile, int arrivaltime, int pid);
     Program(std::string iofile, int arrivaltime, int pid, int priority);
-    friend bool operator > ( Program const& a, Program const& b);
-    int getPid() {return pid;};
-    int getPc() {return pc;};
-    int getPriority() {return priority;};
-    int getArrivaltime() {return arrivaltime;};
+    friend bool operator>(Program const &a, Program const &b);
+    int getPid() const { return pid; };
+    int getPc() { return pc; };
+    int getPriority() const { return priority; };
+    int getArrivaltime() const { return arrivaltime; };
     int run();
 
 private:

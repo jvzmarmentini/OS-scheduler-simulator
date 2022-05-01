@@ -8,25 +8,44 @@
 
 namespace constants
 {
-    const bool S_DEBBUG = false;
+    const bool S_DEBBUG = true;
 }
 
-struct comparator {
-     bool operator()(Program i, Program j) {
-     return i > j;
-    }
+enum Policy
+{
+    PSP,
+    PCP,
+    RR,
+    ND
 };
 
+struct arrivaltimecomparator
+{
+    bool operator()(Program i, Program j)
+    {
+        return i.getArrivaltime() > j.getArrivaltime();
+    }
+};
+struct prioritycomparator
+{
+    bool operator()(Program i, Program j)
+    {
+        return i.getPriority() > j.getPriority();
+    }
+};
 
 class Scheduler
 {
 public:
     Scheduler(std::string policy);
-    std::priority_queue<Program, std::vector<Program>, comparator>& getQnew() {return qnew;};
-    std::deque<Program>& getQready() {return qready;};
-    std::deque<Program>& getQrunning() {return qrunning;};
-    std::deque<Program>& getQblocked() {return qblocked;};
-    std::deque<Program>& getQexit() {return qexit;};
+    std::priority_queue<Program, std::deque<Program>, arrivaltimecomparator> &getQnew() { return qnew; };
+    std::priority_queue<Program, std::deque<Program>, prioritycomparator> &getQready() { return qready; };
+    std::deque<Program> &getQrunning() { return qrunning; };
+    std::deque<Program> &getQblocked() { return qblocked; };
+    std::deque<Program> &getQexit() { return qexit; };
+    Policy getPolicy() { return policy; };
+    bool preemption(Program candidate, Program current);
+    void swap();
     void spawn(Program p);
     void admit(int currenttime);
     void dispatch();
@@ -35,12 +54,13 @@ public:
     void eventoccurs();
     void release();
 
+    void printAll(){};
     void printQueue(std::deque<Program> q);
 
 private:
-    std::string policy;
-    std::priority_queue<Program, std::vector<Program>, comparator> qnew;
-    std::deque<Program> qready;
+    Policy policy;
+    std::priority_queue<Program, std::deque<Program>, arrivaltimecomparator> qnew;
+    std::priority_queue<Program, std::deque<Program>, prioritycomparator> qready;
     std::deque<Program> qrunning;
     std::deque<Program> qblocked;
     std::deque<Program> qexit;
