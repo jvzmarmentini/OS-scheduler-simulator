@@ -38,6 +38,7 @@ class Scheduler
 {
 public:
     Scheduler(std::string policy);
+    Scheduler(std::string policy, int quantum);
     std::priority_queue<Program, std::deque<Program>, arrivaltimecomparator> &getQnew() { return qnew; };
     std::priority_queue<Program, std::deque<Program>, prioritycomparator> &getQready() { return qready; };
     std::deque<Program> &getQrunning() { return qrunning; };
@@ -50,15 +51,19 @@ public:
     void admit(int currenttime);
     void dispatch();
     void timeout();
+    void listenQblocked();
     void eventwait();
     void eventoccurs();
     void release();
 
-    void printAll(){};
-    void printQueue(std::deque<Program> q);
+    void printAll();
+    std::string printQueue(std::deque<Program> q);
+    std::string printPQueueA(std::priority_queue<Program, std::deque<Program>, arrivaltimecomparator> q);
+    std::string printPQueueP(std::priority_queue<Program, std::deque<Program>, prioritycomparator> q);
 
 private:
     Policy policy;
+    int quantum = 0;
     std::priority_queue<Program, std::deque<Program>, arrivaltimecomparator> qnew;
     std::priority_queue<Program, std::deque<Program>, prioritycomparator> qready;
     std::deque<Program> qrunning;

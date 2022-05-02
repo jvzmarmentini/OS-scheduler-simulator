@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <random>
 
 #include "Program.h"
 
@@ -115,12 +116,17 @@ Operator Program::op(string com)
 /**
  * Run the program for 1 time unit
  *
- * @return 1 if 'SYSCALL 0' was executed. Otherwise returns 0
+ * @return 0 if 'SYSCALL 0' was executed.
+ *         1 if IO
+ *         -1 otherwise
  *
  * @throw exception-object exception description
  */
 int Program::run()
 {
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<int> gen(10, 20);
     string line = code[pc];
     string command = line.substr(0, line.find(' '));
     string target = line.substr(line.find(' ') + 1);
@@ -135,6 +141,8 @@ int Program::run()
         else
             value = datasegment[target];
     }
+
+    processingtime++;
 
     switch (op(command))
     {
@@ -172,14 +180,14 @@ int Program::run()
         if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; BRANY " << target << endl;
         pc = labels[target];
-        return 0;
+        return -1;
     case BRPOS:
         if (constants::P_DEBBUG)
             cout << "pc: " << pc << "; BRPOS " << target << endl;
         if (acc > 0)
         {
             pc = labels[target];
-            return 0;
+            return -1;
         }
         break;
     case BRZERO:
@@ -188,7 +196,7 @@ int Program::run()
         if (acc == 0)
         {
             pc = labels[target];
-            return 0;
+            return -1;
         }
         break;
     case BRNEG:
@@ -197,7 +205,7 @@ int Program::run()
         if (acc < 0)
         {
             pc = labels[target];
-            return 0;
+            return -1;
         }
         break;
     case SYSCALL:
@@ -206,23 +214,29 @@ int Program::run()
         {
             if (constants::P_DEBBUG)
                 cout << "pc: " << pc << "; SYSCALL " << target << endl;
-            return 1;
+            return 0;
         }
         else if (value == 1)
         {
             if (constants::P_DEBBUG)
                 cout << "pc: " << pc << "; SYSCALL " << target << endl;
             std::cout << "ACC: " << acc << std::endl;
+            waitingtime = gen(rng);
+            pc += 1;
+            return 1;
         }
         else
         {
             int tmp;
             if (constants::P_DEBBUG)
                 cout << "pc: " << pc << "; SYSCALL " << target << endl;
-            cin >> tmp;
+            std::cout << "Keyboard input..." << std::endl;
+            waitingtime = gen(rng);
+            pc += 1;
+            return 1;
         }
         break;
     };
     pc += 1;
-    return 0;
+    return -1;
 }
