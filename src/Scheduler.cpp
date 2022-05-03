@@ -86,7 +86,7 @@ void Scheduler::listenQblocked()
         for (Program &p : qblocked)
         {
             std::cout << "listen pid: " << p.getPid() << ", still has " << p.getWaitingtime() << " t.u." << std::endl;
-            if (p.getWaitingtime())
+            if (!p.getWaitingtime())
                 return eventoccurs();
             p.decrementWaitingtime();
         }
@@ -145,7 +145,7 @@ std::string Scheduler::printPQueueA(std::priority_queue<Program, std::deque<Prog
     std::string o;
     while (!q.empty())
     {
-        o += std::to_string(q.top().getPid()) + " ";
+        o += std::to_string(q.top().getPid()) + "\n";
         q.pop();
     }
     return o;
@@ -155,7 +155,7 @@ std::string Scheduler::printPQueueP(std::priority_queue<Program, std::deque<Prog
     std::string o;
     while (!q.empty())
     {
-        o += std::to_string(q.top().getPid()) + " ";
+        o += std::to_string(q.top().getPid()) + "\n";
         q.pop();
     }
     return o;

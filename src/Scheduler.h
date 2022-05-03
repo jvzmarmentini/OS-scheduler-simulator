@@ -1,7 +1,7 @@
 #include <iostream>
 #include <deque>
 #include <queue>
-#include <vector>
+#include <forward_list>
 #include "Program.h"
 #ifndef SCHEDULER_H
 #define SCHEDULER_H

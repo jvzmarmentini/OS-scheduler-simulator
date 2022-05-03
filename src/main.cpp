@@ -9,8 +9,8 @@ int main()
 
     Scheduler scheduler("PSP");
 
-    Program p0("../test-cases/0.txt", 0, 0, 0);
-    Program p1("../test-cases/1.txt", 0, 1, 1);
+    Program p0("../test-cases/0.txt", 0, 0);
+    Program p1("../test-cases/1.txt", 5, 1);
     scheduler.spawn(p0);
     scheduler.spawn(p1);
     while (true)
