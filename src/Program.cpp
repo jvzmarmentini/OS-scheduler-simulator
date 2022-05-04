@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <random>
+#include <algorithm> 
 
 #include "Program.h"
 
