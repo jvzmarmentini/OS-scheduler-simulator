@@ -11,8 +11,10 @@ int main()
 
     Program p0("../test-cases/0.txt", 0, 0);
     Program p1("../test-cases/1.txt", 5, 1);
+    Program p2("../test-cases/0.txt", 20, 2);
     scheduler.spawn(p0);
     scheduler.spawn(p1);
+    scheduler.spawn(p2);
     while (true)
     {
         std::cout << "system clock: " << systemclock << std::endl;
