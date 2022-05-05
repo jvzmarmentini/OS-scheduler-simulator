@@ -1,10 +1,11 @@
-# os_t1
-scheduler simulator with FIFO, SFJ and Round Robin policies in C++11
+# Trabalho 1 de sistemas operacionais
+Simulador do escalonador de um sistema operacional com as politicas de prioridade sem preempcao, prioridade com preempcao e round robin
 
-# run on mac
+# Para compilar e executar em Mac ou Linux
 g++ -std=c++11 *.cpp && ./a.out
 
-# next steps
-interface
-code smell
-readability
+# Comandos da interface
+n ou next para rodar o proximo ciclo do relogio
+d ou debbug para imprimir as filas do escalonador e rodar o proximo ciclo
+e ou exit para finalizar a aplicacao
+f ou finish para rodar até o final da aplicacão

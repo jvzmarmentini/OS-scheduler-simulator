@@ -25,7 +25,7 @@ void Program::ltrim(string &s)
 
 bool operator>(Program const &lhs, Program const &rhs)
 {
-    return lhs.priority > rhs.priority;
+    return lhs.priority < rhs.priority;
 }
 
 void Program::mount(string path)
@@ -110,15 +110,6 @@ Operator Program::op(string com)
     return SYSCALL;
 }
 
-/**
- * Run the program for 1 time unit
- *
- * @return 0 if 'SYSCALL 0' was executed.
- *         1 if IO
- *         -1 otherwise
- *
- * @throw exception-object exception description
- */
 int Program::run()
 {
     std::random_device dev;
@@ -224,12 +215,12 @@ int Program::run()
         }
         else
         {
-            int tmp;
+            string tmp;
             if (constants::P_DEBBUG)
                 cout << "pc: " << pc << "; SYSCALL " << target << endl;
-            std::cout << "input: " << std::endl;
+            std::cout << "pid " << pid << " => input: ";
             cin >> tmp;
-            acc = tmp;
+            acc = stoi(tmp);
             blockedtime = gen(rng);
             pc += 1;
             return 1;

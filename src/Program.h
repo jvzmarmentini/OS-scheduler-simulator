@@ -7,7 +7,7 @@
 
 namespace constants
 {
-    const bool P_DEBBUG = true;
+    const bool P_DEBBUG = false;
 }
 
 enum Operator
@@ -37,6 +37,7 @@ public:
     int getBlockedtime() const { return blockedtime; };
     int getProcessingtime() const { return processingtime; };
     int getTurnarroundtime() const { return turnarroundtime; };
+    void setTurnarroundtime(int tt) { turnarroundtime = tt; };
     void decrementBlockedtime() { blockedtime--; };
     void incrementProcessingtime() { processingtime++; };
     int run();

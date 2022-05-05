@@ -1,4 +1,6 @@
 #include <iostream>
+#include <deque>
+#include <queue>
 #include "Scheduler.h"
 
 using namespace std;
@@ -9,7 +11,7 @@ Scheduler::Scheduler(string policy)
         this->policy = PCP;
     if (policy == "RR")
         this->policy = RR;
-    else
+    if (policy == "PSP")
         this->policy = PSP;
 }
 bool Scheduler::preemption(Program candidate, Program current)
@@ -66,11 +68,11 @@ void Scheduler::dispatch()
             qrunning.push_back(qready.top());
             return qready.pop();
         }
-        if (policy == PCP && qrunning.front() > qready.top())
+        if (policy == PCP && qready.top() > qrunning.front())
             return swap();
     }
 };
-void Scheduler::process()
+void Scheduler::process(int currenttime)
 {
     if (qrunning.empty())
         return;
@@ -81,7 +83,7 @@ void Scheduler::process()
     if (policy == RR)
         localquantum++;
     if (!res)
-        return release();
+        return release(currenttime);
     else if (res == 1)
         return eventwait();
     return timeout();
@@ -96,7 +98,7 @@ void Scheduler::timeout()
         qready.push(qrunning.front());
         qrunning.pop_front();
         if (constants::S_DEBBUG)
-            cout << "timeout for pid " << qready.top().getPid() << endl;
+            cout << "timeout for pid " << qrunning.front().getPid() << endl;
     }
 };
 void Scheduler::listenQblocked()
@@ -106,14 +108,15 @@ void Scheduler::listenQblocked()
         {
             cout << "listen pid: " << p.getPid() << ", still has " << p.getBlockedtime() << " t.u." << endl;
             if (!p.getBlockedtime())
-                return eventoccurs();
-            p.decrementBlockedtime();
+                eventoccurs();
+            else
+                p.decrementBlockedtime();
         }
 }
 void Scheduler::eventwait()
 {
     if (constants::S_DEBBUG)
-        cout << "event started for pid " << qready.top().getPid() << endl;
+        cout << "event started for pid " << qrunning.front().getPid() << endl;
     if (qrunning.empty())
         return;
     if (policy == RR)
@@ -124,7 +127,7 @@ void Scheduler::eventwait()
 void Scheduler::eventoccurs()
 {
     if (constants::S_DEBBUG)
-        cout << "event ended for pid " << qready.top().getPid() << endl;
+        cout << "event ended for pid " << qblocked.front().getPid() << endl;
     if (qblocked.empty())
         return;
     if (policy == PSP)
@@ -133,7 +136,7 @@ void Scheduler::eventoccurs()
         qready.push(qblocked.front());
     qblocked.pop_front();
 };
-void Scheduler::release()
+void Scheduler::release(int currenttime)
 {
     if (constants::S_DEBBUG)
         cout << "releasing pid " << qrunning.front().getPid() << endl;
@@ -143,9 +146,15 @@ void Scheduler::release()
         sem = false;
     if (policy == RR)
         localquantum = 0;
-    qexit.push_back(qrunning.front());
+    Program p = qrunning.front();
+    p.setTurnarroundtime(currenttime);
+    qexit.push_back(p);
     qrunning.pop_front();
 };
+bool Scheduler::isFinished()
+{
+    return (qnew.empty() && qready.empty() && qrunning.empty() && qblocked.empty());
+}
 
 void Scheduler::printTimes()
 {
@@ -158,39 +167,38 @@ void Scheduler::printTimes()
 }
 void Scheduler::printAll()
 {
-    cout << "new: " << printPQueueA(qnew) << endl;
-    cout << "ready: " << printPQueueP(qready) << endl;
-    cout << "running: " << printQueue(qrunning) << endl;
-    cout << "blocked: " << printQueue(qblocked) << endl;
-    cout << "exit: " << printQueue(qexit) << endl;
+    priority_queue<Program, deque<Program>, arrivaltimecomparator> tmpqnew = qnew;
+    priority_queue<Program, deque<Program>, prioritycomparator> tmpqready = qready;
+    cout << "new: ";
+    while (!tmpqnew.empty())
+    {
+        cout << to_string(tmpqnew.top().getPid()) + " ";
+        tmpqnew.pop();
+    }
+    cout << endl
+         << "ready: ";
+    while (!tmpqready.empty())
+    {
+        cout << to_string(tmpqready.top().getPid()) + " ";
+        tmpqready.pop();
+    }
+    cout << endl
+         << "running: ";
+    for (Program &p : qrunning)
+    {
+        cout << to_string(p.getPid()) + " ";
+    }
+    cout << endl
+         << "blocked: ";
+    for (Program &p : qblocked)
+    {
+        cout << to_string(p.getPid()) + " ";
+    }
+    cout << endl
+         << "exit: ";
+    for (Program &p : qexit)
+    {
+        cout << to_string(p.getPid()) + " ";
+    }
+    cout << endl;
 }
-
-string Scheduler::printQueue(deque<Program> q)
-{
-    string o;
-    for (Program &p : q)
-    {
-        o += to_string(p.getPid()) + " ";
-    }
-    return o;
-};
-string Scheduler::printPQueueA(priority_queue<Program, deque<Program>, arrivaltimecomparator> q)
-{
-    string o;
-    while (!q.empty())
-    {
-        o += to_string(q.top().getPid()) + " ";
-        q.pop();
-    }
-    return o;
-};
-string Scheduler::printPQueueP(priority_queue<Program, deque<Program>, prioritycomparator> q)
-{
-    string o;
-    while (!q.empty())
-    {
-        o += to_string(q.top().getPid()) + " ";
-        q.pop();
-    }
-    return o;
-};

@@ -1,0 +1,31 @@
+.code
+    LOAD variable
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SUB #1
+    SYSCALL 1
+    SYSCALL 0
+.endcode
+.data
+    variable 10
+    variable2 5
+.enddata
