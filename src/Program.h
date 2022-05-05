@@ -7,7 +7,7 @@
 
 namespace constants
 {
-    const bool P_DEBBUG = true;
+    const bool P_DEBBUG = false;
 }
 
 enum Operator

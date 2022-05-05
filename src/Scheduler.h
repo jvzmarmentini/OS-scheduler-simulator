@@ -64,6 +64,7 @@ public:
 private:
     Policy policy;
     int quantum = 0;
+    bool sem = false;
     std::priority_queue<Program, std::deque<Program>, arrivaltimecomparator> qnew;
     std::priority_queue<Program, std::deque<Program>, prioritycomparator> qready;
     std::deque<Program> qrunning;

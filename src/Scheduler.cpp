@@ -59,6 +59,12 @@ void Scheduler::dispatch()
     {
         if (qrunning.empty())
         {
+            if (policy == PSP)
+            {
+                if (sem)
+                    return;
+                sem = true;
+            }
             if (constants::S_DEBBUG)
                 std::cout << "dispatching pid " << qready.top().getPid() << std::endl;
             qrunning.push_back(qready.top());
@@ -107,7 +113,10 @@ void Scheduler::eventoccurs()
         std::cout << "event ended for pid " << qready.top().getPid() << std::endl;
     if (!qblocked.empty())
     {
-        qready.push(qblocked.front());
+        if (policy == PSP)
+            qrunning.push_back(qblocked.front());
+        else
+            qready.push(qblocked.front());
         qblocked.pop_front();
     }
 };
@@ -117,6 +126,8 @@ void Scheduler::release()
         std::cout << "releasing pid " << qrunning.front().getPid() << std::endl;
     if (!qrunning.empty())
     {
+        if (policy == PSP)
+            sem = false;
         qexit.push_back(qrunning.front());
         qrunning.pop_front();
     }
@@ -145,7 +156,7 @@ std::string Scheduler::printPQueueA(std::priority_queue<Program, std::deque<Prog
     std::string o;
     while (!q.empty())
     {
-        o += std::to_string(q.top().getPid()) + "\n";
+        o += std::to_string(q.top().getPid()) + " ";
         q.pop();
     }
     return o;
@@ -155,7 +166,7 @@ std::string Scheduler::printPQueueP(std::priority_queue<Program, std::deque<Prog
     std::string o;
     while (!q.empty())
     {
-        o += std::to_string(q.top().getPid()) + "\n";
+        o += std::to_string(q.top().getPid()) + " ";
         q.pop();
     }
     return o;
