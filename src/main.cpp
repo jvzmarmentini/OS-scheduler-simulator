@@ -7,38 +7,21 @@ int main()
     int systemclock = 0;
     bool inputbreak = true;
 
-    Scheduler scheduler("PSP");
+    Scheduler scheduler("RR", 5);
 
     Program p0("../test-cases/0.txt", 0, 0);
-    Program p1("../test-cases/1.txt", 5, 1);
-    Program p2("../test-cases/0.txt", 20, 2);
+    // Program p1("../test-cases/1.txt", 5, 1);
+    // Program p2("../test-cases/0.txt", 20, 2);
     scheduler.spawn(p0);
-    scheduler.spawn(p1);
-    scheduler.spawn(p2);
+    // scheduler.spawn(p1);
+    // scheduler.spawn(p2);
     while (true)
     {
         std::cout << "system clock: " << systemclock << std::endl;
         scheduler.admit(systemclock);
         scheduler.dispatch();
-        if (!scheduler.getQrunning().empty())
-        {
-            int res = scheduler.getQrunning().front().run();
-            if (!res)
-            {
-                scheduler.release();
-            }
-            else if (res == 1)
-            {
-                scheduler.eventwait();
-            }
-            else
-            {
-                scheduler.timeout();
-            }
-        }
+        scheduler.process();
         scheduler.listenQblocked();
-        // if program syscall 0 then releas it
-        // if every work is done, stop loop
         if (scheduler.getQnew().empty() && scheduler.getQready().empty() && scheduler.getQrunning().empty() && scheduler.getQblocked().empty())
             break;
         while (inputbreak)

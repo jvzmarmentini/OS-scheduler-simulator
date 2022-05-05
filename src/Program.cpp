@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 #include <random>
-#include <algorithm> 
+#include <algorithm>
 
 #include "Program.h"
 
@@ -18,7 +18,7 @@ void Program::ltrim(string &s)
 
 bool operator>(Program const &lhs, Program const &rhs)
 {
-    return lhs.arrivaltime > rhs.arrivaltime;
+    return lhs.priority > rhs.priority;
 }
 
 void Program::mount(string path)

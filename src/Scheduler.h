@@ -45,11 +45,13 @@ public:
     std::deque<Program> &getQblocked() { return qblocked; };
     std::deque<Program> &getQexit() { return qexit; };
     Policy getPolicy() { return policy; };
+    void incrementLocalQuantum() { localquantum++; };
     bool preemption(Program candidate, Program current);
     void swap();
     void spawn(Program p);
     void admit(int currenttime);
     void dispatch();
+    void process();
     void timeout();
     void listenQblocked();
     void eventwait();
@@ -63,7 +65,8 @@ public:
 
 private:
     Policy policy;
-    int quantum = 0;
+    int quantum;
+    int localquantum = 0;
     bool sem = false;
     std::priority_queue<Program, std::deque<Program>, arrivaltimecomparator> qnew;
     std::priority_queue<Program, std::deque<Program>, prioritycomparator> qready;
