@@ -38,7 +38,7 @@ class Scheduler
 {
 public:
     Scheduler(std::string policy);
-    Scheduler(std::string policy, int quantum);
+    void setQuantum(int q) { quantum = q; };
     std::priority_queue<Program, std::deque<Program>, arrivaltimecomparator> &getQnew() { return qnew; };
     std::priority_queue<Program, std::deque<Program>, prioritycomparator> &getQready() { return qready; };
     std::deque<Program> &getQrunning() { return qrunning; };
@@ -58,6 +58,7 @@ public:
     void eventoccurs();
     void release();
 
+    void printTimes();
     void printAll();
     std::string printQueue(std::deque<Program> q);
     std::string printPQueueA(std::priority_queue<Program, std::deque<Program>, arrivaltimecomparator> q);
