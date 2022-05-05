@@ -5,7 +5,7 @@ Simulador do escalonador de um sistema operacional com as politicas de prioridad
 g++ -std=c++11 *.cpp && ./a.out
 
 # Comandos da interface
-n ou next para rodar o proximo ciclo do relogio
-d ou debbug para imprimir as filas do escalonador e rodar o proximo ciclo
-e ou exit para finalizar a aplicacao
-f ou finish para rodar até o final da aplicacão
+n ou next para rodar o proximo ciclo do relogio<br />
+d ou debbug para imprimir as filas do escalonador e rodar o proximo ciclo<br />
+e ou exit para finalizar a aplicacao<br />
+f ou finish para rodar até o final da aplicacão<br />
