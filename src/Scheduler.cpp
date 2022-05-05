@@ -7,14 +7,10 @@ Scheduler::Scheduler(string policy)
 {
     if (policy == "PCP")
         this->policy = PCP;
-    else
-        this->policy = PSP;
-}
-Scheduler::Scheduler(string policy, int quantum)
-{
     if (policy == "RR")
         this->policy = RR;
-    this->quantum = quantum;
+    else
+        this->policy = PSP;
 }
 bool Scheduler::preemption(Program candidate, Program current)
 {
@@ -55,23 +51,24 @@ void Scheduler::admit(int currenttime)
 };
 void Scheduler::dispatch()
 {
-    if (qready.empty())
-        return;
-    if (qrunning.empty())
+    if (!qready.empty())
     {
-        if (policy == PSP)
+        if (qrunning.empty())
         {
-            if (sem)
-                return;
-            sem = true;
+            if (policy == PSP)
+            {
+                if (sem)
+                    return;
+                sem = true;
+            }
+            if (constants::S_DEBBUG)
+                cout << "dispatching pid " << qready.top().getPid() << endl;
+            qrunning.push_back(qready.top());
+            return qready.pop();
         }
-        if (constants::S_DEBBUG)
-            cout << "dispatching pid " << qready.top().getPid() << endl;
-        qrunning.push_back(qready.top());
-        return qready.pop();
+        if (policy == PCP && qrunning.front() > qready.top())
+            return swap();
     }
-    if (policy == PCP && qrunning.front() > qready.top())
-        return swap();
 };
 void Scheduler::process()
 {
@@ -93,7 +90,6 @@ void Scheduler::timeout()
 {
     if (policy == RR)
     {
-        cout << quantum << localquantum << endl;
         if (localquantum % quantum)
             return;
         localquantum = 0;
@@ -108,10 +104,10 @@ void Scheduler::listenQblocked()
     if (!qblocked.empty())
         for (Program &p : qblocked)
         {
-            cout << "listen pid: " << p.getPid() << ", still has " << p.getWaitingtime() << " t.u." << endl;
-            if (!p.getWaitingtime())
+            cout << "listen pid: " << p.getPid() << ", still has " << p.getBlockedtime() << " t.u." << endl;
+            if (!p.getBlockedtime())
                 return eventoccurs();
-            p.decrementWaitingtime();
+            p.decrementBlockedtime();
         }
 }
 void Scheduler::eventwait()
@@ -151,6 +147,15 @@ void Scheduler::release()
     qrunning.pop_front();
 };
 
+void Scheduler::printTimes()
+{
+    for (Program &p : qexit)
+    {
+        std::cout << "pid " << p.getPid() << std::endl;
+        std::cout << "processing time: " << p.getProcessingtime() << std::endl;
+        std::cout << "turn arround time: " << p.getTurnarroundtime() - p.getArrivaltime() << std::endl;
+    }
+}
 void Scheduler::printAll()
 {
     cout << "new: " << printPQueueA(qnew) << endl;

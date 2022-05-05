@@ -10,6 +10,13 @@
 
 using namespace std;
 
+Program::Program(string path, int arrivaltime, int pid, int priority)
+{
+    this->arrivaltime = arrivaltime;
+    this->pid = pid;
+    this->priority = priority;
+    mount(path);
+}
 void Program::ltrim(string &s)
 {
     s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch)
@@ -29,7 +36,10 @@ void Program::mount(string path)
     {
         ltrim(line);
         if (string(line) == ".code" || string(line) == ".data")
+        {
+            tmp.clear();
             continue;
+        }
         else if (string(line) == ".endcode")
         {
             for (int i = 0; i < tmp.size(); i++)
@@ -74,23 +84,9 @@ void Program::mount(string path)
     }
 }
 
-Program::Program(string path, int arrivaltime, int pid)
-{
-    this->arrivaltime = arrivaltime;
-    this->pid = pid;
-    this->priority = 0;
-    mount(path);
-}
-Program::Program(string path, int arrivaltime, int pid, int priority)
-{
-    this->arrivaltime = arrivaltime;
-    this->pid = pid;
-    this->priority = priority;
-    mount(path);
-}
-
 Operator Program::op(string com)
 {
+    std::transform(com.begin(), com.end(), com.begin(), ::toupper);
     if (com == "ADD")
         return ADD;
     if (com == "SUB")
@@ -222,7 +218,7 @@ int Program::run()
             if (constants::P_DEBBUG)
                 cout << "pc: " << pc << "; SYSCALL " << target << endl;
             std::cout << "ACC: " << acc << std::endl;
-            waitingtime = gen(rng);
+            blockedtime = gen(rng);
             pc += 1;
             return 1;
         }
@@ -231,8 +227,10 @@ int Program::run()
             int tmp;
             if (constants::P_DEBBUG)
                 cout << "pc: " << pc << "; SYSCALL " << target << endl;
-            std::cout << "Keyboard input..." << std::endl;
-            waitingtime = gen(rng);
+            std::cout << "input: " << std::endl;
+            cin >> tmp;
+            acc = tmp;
+            blockedtime = gen(rng);
             pc += 1;
             return 1;
         }
